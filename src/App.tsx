@@ -10,9 +10,10 @@ import { EventDetailPage } from '@/pages/EventDetailPage';
 import { AnalyticsPage } from '@/pages/AnalyticsPage';
 import { AuditLogsPage } from '@/pages/AuditLogsPage';
 import { AdminPage } from '@/pages/AdminPage';
+import { MarketingManagementPage } from '@/pages/MarketingManagementPage';
 import { loadMarketingContent, MarketingBanner } from '@/lib/content';
 import { logAction } from '@/lib/analytics';
-import { BarChart3, FileText } from 'lucide-react';
+import { BarChart3, FileText, Megaphone } from 'lucide-react';
 
 const HomePage = () => {
   const [marketingContent, setMarketingContent] = useState<{
@@ -44,43 +45,74 @@ const HomePage = () => {
 
   return (
     <main className="flex-1">
-      {enabledBanners.map(banner => (
+      {enabledBanners.map((banner) => (
         <section
           key={banner.id}
-          className="container mx-auto px-4 py-4 md:py-6"
+          className="relative overflow-hidden"
           style={{
             background: banner.backgroundColor,
-            color: banner.textColor,
           }}
         >
-          <div className="max-w-5xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 md:p-6 rounded-lg">
-              <div className="flex-1 text-center md:text-left space-y-2">
-                <h2 className="text-xl md:text-2xl font-bold leading-tight">{banner.title}</h2>
-                <p className="text-sm md:text-base opacity-90">{banner.subtitle}</p>
-                {banner.description && (
-                  <p className="text-xs md:text-sm opacity-80 hidden md:block">{banner.description}</p>
-                )}
+          <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent" />
+          <div className="container mx-auto px-4 py-8 md:py-12 relative">
+            <div className="max-w-6xl mx-auto">
+              <div className="relative flex flex-col md:flex-row items-center justify-between gap-6 p-8 md:p-10 rounded-2xl shadow-2xl backdrop-blur-md border border-white/20 bg-white/10">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+                
+                <div className="flex-1 text-center md:text-left space-y-3 relative z-10">
+                  <div className="inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm mb-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: banner.textColor }}>
+                      Featured
+                    </span>
+                  </div>
+                  <h2 
+                    className="text-2xl md:text-4xl lg:text-5xl font-bold leading-tight drop-shadow-lg"
+                    style={{ color: banner.textColor }}
+                  >
+                    {banner.title}
+                  </h2>
+                  <p 
+                    className="text-base md:text-lg lg:text-xl opacity-95 font-medium"
+                    style={{ color: banner.textColor }}
+                  >
+                    {banner.subtitle}
+                  </p>
+                  {banner.description && (
+                    <p 
+                      className="text-sm md:text-base opacity-85 hidden md:block max-w-2xl leading-relaxed"
+                      style={{ color: banner.textColor }}
+                    >
+                      {banner.description}
+                    </p>
+                  )}
+                </div>
+                
+                <div className="relative z-10 shrink-0">
+                  <Button
+                    asChild
+                    size="lg"
+                    className="transition-all hover:scale-110 shadow-2xl font-bold text-base px-8 py-6 rounded-xl hover:shadow-3xl"
+                    style={{
+                      backgroundColor: banner.textColor,
+                      color: banner.backgroundColor,
+                      borderColor: 'transparent',
+                    }}
+                    onClick={() => {
+                      logAction({
+                        action: 'click',
+                        resource: 'banner',
+                        resourceId: banner.id,
+                      });
+                    }}
+                  >
+                    <Link to={banner.ctaLink} className="flex items-center gap-2">
+                      {banner.ctaText}
+                      <span className="text-lg">→</span>
+                    </Link>
+                  </Button>
+                </div>
               </div>
-              <Button
-                asChild
-                size="default"
-                className="shrink-0"
-                style={{
-                  backgroundColor: banner.textColor,
-                  color: banner.backgroundColor,
-                  borderColor: 'transparent',
-                }}
-                onClick={() => {
-                  logAction({
-                    action: 'click',
-                    resource: 'banner',
-                    resourceId: banner.id,
-                  });
-                }}
-              >
-                <Link to={banner.ctaLink}>{banner.ctaText}</Link>
-              </Button>
             </div>
           </div>
         </section>
@@ -179,7 +211,7 @@ const AdminHome = () => {
           <p className="text-muted-foreground mb-4">
             Use the navigation menu to access different admin features:
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -212,6 +244,22 @@ const AdminHome = () => {
                 </Button>
               </CardContent>
             </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Megaphone className="h-5 w-5" />
+                  Marketing
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Manage marketing banners and event categories
+                </p>
+                <Button asChild>
+                  <Link to="/admin/marketing">Go to Marketing</Link>
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </CardContent>
       </Card>
@@ -232,6 +280,7 @@ const App = () => {
             <Route index element={<AdminHome />} />
             <Route path="analytics" element={<AnalyticsPage />} />
             <Route path="audit-logs" element={<AuditLogsPage />} />
+            <Route path="marketing" element={<MarketingManagementPage />} />
           </Route>
         </Routes>
       </Suspense>

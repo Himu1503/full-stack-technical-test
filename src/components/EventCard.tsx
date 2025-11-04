@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Event } from '@/types';
 import { cn } from '@/lib/utils';
 import { EventRegistrationModal } from './EventRegistrationModal';
-import { getCategoryConfig } from '@/lib/content';
+import { getCategoryConfig, getCategoryConfigSync } from '@/lib/content';
 import { logAction } from '@/lib/analytics';
 
 interface EventCardProps {
@@ -42,13 +42,44 @@ export const EventCard = ({ event, className }: EventCardProps) => {
   } | null>(null);
 
   useEffect(() => {
-    if (event.categoryId) {
-      getCategoryConfig(event.categoryId).then(config => {
-        if (config) {
-          setCategoryConfig(config);
+    const loadCategoryConfig = () => {
+      if (event.categoryId) {
+        const syncConfig = getCategoryConfigSync(event.categoryId);
+        if (syncConfig) {
+          setCategoryConfig({
+            icon: syncConfig.icon,
+            color: syncConfig.color,
+            backgroundColor: syncConfig.backgroundColor,
+            textColor: syncConfig.textColor,
+          });
+        } else {
+          getCategoryConfig(event.categoryId).then(config => {
+            if (config) {
+              setCategoryConfig({
+                icon: config.icon,
+                color: config.color,
+                backgroundColor: config.backgroundColor,
+                textColor: config.textColor,
+              });
+            }
+          });
         }
-      });
-    }
+      }
+    };
+
+    loadCategoryConfig();
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'pulse_events_categories' && event.categoryId) {
+        loadCategoryConfig();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [event.categoryId]);
 
   useEffect(() => {
@@ -67,13 +98,20 @@ export const EventCard = ({ event, className }: EventCardProps) => {
     : null;
 
   return (
-    <Card className={cn('flex flex-col h-full hover:shadow-lg transition-shadow', className)}>
-      <CardHeader>
-        <div className="flex items-start justify-between gap-2">
-          <CardTitle className="text-xl line-clamp-2 flex-1">{event.title}</CardTitle>
+    <Card className={cn(
+      'flex flex-col h-full transition-all duration-300',
+      'hover:shadow-xl hover:scale-[1.02] hover:border-primary/20',
+      'border border-border/50 bg-card/50 backdrop-blur-sm',
+      className
+    )}>
+      <CardHeader className="pb-4">
+        <div className="flex items-start justify-between gap-3">
+          <CardTitle className="text-xl font-bold line-clamp-2 flex-1 leading-tight">
+            {event.title}
+          </CardTitle>
           {event.category && (
             <span
-              className="px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap flex items-center gap-1"
+              className="px-3 py-1.5 text-xs font-semibold rounded-full whitespace-nowrap flex items-center gap-1.5 shadow-sm transition-transform hover:scale-105"
               style={
                 categoryConfig
                   ? {
@@ -83,19 +121,19 @@ export const EventCard = ({ event, className }: EventCardProps) => {
                   : undefined
               }
             >
-              {categoryConfig?.icon && <span>{categoryConfig.icon}</span>}
-              {event.category}
+              {categoryConfig?.icon && <span className="text-sm">{categoryConfig.icon}</span>}
+              <span>{event.category}</span>
             </span>
           )}
         </div>
       </CardHeader>
-      <CardContent className="flex-1 space-y-3">
+      <CardContent className="flex-1 space-y-4">
         {event.description && (
-          <p className="text-sm text-muted-foreground line-clamp-3">
+          <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
             {event.description}
           </p>
         )}
-        <div className="space-y-2 text-sm pt-2 border-t">
+        <div className="space-y-2.5 text-sm pt-3 border-t border-border/50">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Calendar className="w-4 h-4" />
             <span>{formatDate(event.date)}</span>
@@ -114,10 +152,10 @@ export const EventCard = ({ event, className }: EventCardProps) => {
             <div className="flex items-center gap-2">
               <span
                 className={cn(
-                  'px-2 py-1 text-xs rounded',
+                  'px-3 py-1.5 text-xs font-medium rounded-md shadow-sm',
                   event.type === 'online'
-                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                    : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
+                    : 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300 border border-green-200 dark:border-green-800'
                 )}
               >
                 {event.type === 'online' ? '🌐 Online' : '📍 In-Person'}
@@ -149,33 +187,33 @@ export const EventCard = ({ event, className }: EventCardProps) => {
           )}
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col gap-2">
-        <div className="flex gap-2 w-full">
+      <CardFooter className="flex flex-col gap-3 pt-4">
+        <div className="flex gap-3 w-full">
           <Button
             asChild
             variant="outline"
-            className="flex-1"
+            className="flex-1 transition-all hover:bg-accent hover:scale-105"
           >
             <Link to={`/events/${event.id}`}>
               View Details
             </Link>
           </Button>
-              <Button
-                className="flex-1"
-                variant={isFull ? 'secondary' : 'default'}
-                disabled={isFull}
-                onClick={() => {
-                  logAction({
-                    action: 'click',
-                    resource: 'button',
-                    resourceId: event.id,
-                    metadata: { buttonText: 'Register' },
-                  });
-                  setIsRegistrationOpen(true);
-                }}
-              >
-                {isFull ? 'Full' : 'Register'}
-              </Button>
+          <Button
+            className="flex-1 transition-all hover:scale-105 shadow-md"
+            variant={isFull ? 'secondary' : 'default'}
+            disabled={isFull}
+            onClick={() => {
+              logAction({
+                action: 'click',
+                resource: 'button',
+                resourceId: event.id,
+                metadata: { buttonText: 'Register' },
+              });
+              setIsRegistrationOpen(true);
+            }}
+          >
+            {isFull ? 'Full' : 'Register'}
+          </Button>
         </div>
       </CardFooter>
 

@@ -73,7 +73,7 @@ export const EventDetailPage = () => {
       <Button
         variant="ghost"
         onClick={() => navigate('/events')}
-        className="mb-6"
+        className="mb-6 transition-all hover:scale-105 hover:bg-accent"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Events
@@ -81,7 +81,7 @@ export const EventDetailPage = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <Card>
+          <Card className="border-border/50 shadow-lg">
             <CardHeader>
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex-1 min-w-0">
@@ -115,59 +115,59 @@ export const EventDetailPage = () => {
 
               <div>
                 <h3 className="font-semibold text-lg mb-4">Event Details</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                    <Calendar className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-medium text-sm text-muted-foreground">Date</p>
-                      <p className="text-base">{formatDate(event.date)}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                    <Clock className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-medium text-sm text-muted-foreground">Time</p>
-                      <p className="text-base">{formatTime(event.date)}</p>
-                    </div>
-                  </div>
-
-                  {event.location && (
-                    <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                      <MapPin className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                      <div className="flex-1">
-                        <p className="font-medium text-sm text-muted-foreground">Location</p>
-                        <p className="text-base">{event.location}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/50 border border-border/50 hover:bg-muted/70 transition-colors">
+                        <Calendar className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm text-muted-foreground">Date</p>
+                          <p className="text-base font-semibold">{formatDate(event.date)}</p>
+                        </div>
                       </div>
-                    </div>
-                  )}
 
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                    <DollarSign className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-medium text-sm text-muted-foreground">Price</p>
-                      <p className="text-base font-semibold">
-                        {event.price === 0 || event.price === undefined ? 'Free Event' : `$${event.price}`}
-                      </p>
-                    </div>
-                  </div>
-
-                  {event.type && (
-                    <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                      <div className="w-5 h-5 flex items-center justify-center text-primary mt-0.5 flex-shrink-0">
-                        {event.type === 'online' ? '🌐' : '📍'}
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/50 border border-border/50 hover:bg-muted/70 transition-colors">
+                        <Clock className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm text-muted-foreground">Time</p>
+                          <p className="text-base font-semibold">{formatTime(event.date)}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-sm text-muted-foreground">Event Type</p>
-                        <p className="text-base">
-                          {event.type === 'online' ? 'Online Event' : 'In-Person Event'}
-                        </p>
-                      </div>
-                    </div>
-                  )}
 
-                  {remainingSeats !== null && (
-                    <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                      {event.location && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/50 border border-border/50 hover:bg-muted/70 transition-colors">
+                          <MapPin className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                          <div className="flex-1">
+                            <p className="font-medium text-sm text-muted-foreground">Location</p>
+                            <p className="text-base font-semibold">{event.location}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/50 border border-border/50 hover:bg-muted/70 transition-colors">
+                        <DollarSign className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm text-muted-foreground">Price</p>
+                          <p className="text-base font-semibold text-primary">
+                            {event.price === 0 || event.price === undefined ? 'Free Event' : `$${event.price}`}
+                          </p>
+                        </div>
+                      </div>
+
+                      {event.type && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/50 border border-border/50 hover:bg-muted/70 transition-colors">
+                          <div className="w-5 h-5 flex items-center justify-center text-primary mt-0.5 flex-shrink-0">
+                            {event.type === 'online' ? '🌐' : '📍'}
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm text-muted-foreground">Event Type</p>
+                            <p className="text-base font-semibold">
+                              {event.type === 'online' ? 'Online Event' : 'In-Person Event'}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {remainingSeats !== null && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/50 border border-border/50 hover:bg-muted/70 transition-colors">
                       <Users className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="font-medium text-sm text-muted-foreground">Availability</p>
@@ -207,21 +207,21 @@ export const EventDetailPage = () => {
 
         <div className="lg:col-span-1">
           <div className="sticky top-4 space-y-6">
-            <Card>
+            <Card className="border-border/50 shadow-lg">
               <CardHeader>
-                <CardTitle className="text-xl">Register Now</CardTitle>
+                <CardTitle className="text-xl font-bold">Register Now</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="text-center p-4 bg-primary/5 rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Event Price</p>
-                  <p className="text-3xl font-bold text-primary">
+                <div className="text-center p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl border border-primary/20">
+                  <p className="text-sm text-muted-foreground mb-2 font-medium">Event Price</p>
+                  <p className="text-4xl font-bold text-primary">
                     {event.price === 0 || event.price === undefined ? 'Free' : `$${event.price}`}
                   </p>
                 </div>
 
                 <div className="space-y-3">
                   <Button
-                    className="w-full"
+                    className="w-full shadow-lg transition-all hover:scale-105"
                     size="lg"
                     onClick={() => setIsRegistrationOpen(true)}
                     disabled={isFull}
@@ -258,12 +258,15 @@ export const EventDetailPage = () => {
             </Card>
 
             {remainingSeats !== null && remainingSeats <= 5 && remainingSeats > 0 && (
-              <Card className="border-orange-200 bg-orange-50 dark:border-orange-900 dark:bg-orange-950">
+              <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900 dark:border-orange-800 shadow-lg">
                 <CardContent className="pt-6">
-                  <p className="text-sm font-medium text-orange-900 dark:text-orange-100">
-                    ⚠️ Only {remainingSeats} seat{remainingSeats !== 1 ? 's' : ''} left!
-                  </p>
-                  <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">⚠️</span>
+                    <p className="text-sm font-bold text-orange-900 dark:text-orange-100">
+                      Only {remainingSeats} seat{remainingSeats !== 1 ? 's' : ''} left!
+                    </p>
+                  </div>
+                  <p className="text-xs text-orange-700 dark:text-orange-300">
                     Register now to secure your spot
                   </p>
                 </CardContent>

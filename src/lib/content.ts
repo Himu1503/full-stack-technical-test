@@ -53,6 +53,20 @@ let categoriesCache: CategoryConfig[] | null = null;
 let marketingCache: MarketingContent | null = null;
 
 export const loadCategories = async (): Promise<CategoryConfig[]> => {
+  // First check localStorage (managed content)
+  try {
+    const stored = localStorage.getItem('pulse_events_categories');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      const categories = Array.isArray(parsed) ? parsed : parsed.categories || [];
+      categoriesCache = categories;
+      return categories;
+    }
+  } catch (error) {
+    console.error('Error loading categories from storage:', error);
+  }
+
+  // Fallback to JSON file
   if (categoriesCache) {
     return categoriesCache;
   }
@@ -72,6 +86,19 @@ export const loadCategories = async (): Promise<CategoryConfig[]> => {
 };
 
 export const loadMarketingContent = async (): Promise<MarketingContent | null> => {
+  // First check localStorage (managed content)
+  try {
+    const stored = localStorage.getItem('pulse_events_marketing_content');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      marketingCache = parsed;
+      return parsed;
+    }
+  } catch (error) {
+    console.error('Error loading marketing content from storage:', error);
+  }
+
+  // Fallback to JSON file
   if (marketingCache) {
     return marketingCache;
   }
@@ -93,6 +120,20 @@ export const loadMarketingContent = async (): Promise<MarketingContent | null> =
 export const getCategoryConfig = async (categoryId: string): Promise<CategoryConfig | null> => {
   const categories = await loadCategories();
   return categories.find(cat => cat.id === categoryId) || null;
+};
+
+export const getCategoryConfigSync = (categoryId: string): CategoryConfig | null => {
+  try {
+    const stored = localStorage.getItem('pulse_events_categories');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      const categories = Array.isArray(parsed) ? parsed : parsed.categories || [];
+      return categories.find((cat: CategoryConfig) => cat.id === categoryId) || null;
+    }
+  } catch (error) {
+    console.error('Error loading category config from storage:', error);
+  }
+  return null;
 };
 
 export const clearCache = () => {

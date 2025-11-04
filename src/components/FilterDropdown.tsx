@@ -32,9 +32,9 @@ export const FilterDropdown = ({
 }: FilterDropdownProps) => {
   return (
     <div className={cn('space-y-2', className)}>
-      <Label className="text-sm font-medium">{label}</Label>
+      <Label className="text-sm font-semibold text-foreground">{label}</Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full h-11 border-border/50 bg-background/50 backdrop-blur-sm transition-all focus:ring-2 focus:ring-primary/20">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>

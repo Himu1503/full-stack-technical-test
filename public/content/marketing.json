@@ -4,10 +4,10 @@
       "id": "hero-banner",
       "title": "Discover Amazing Events",
       "subtitle": "Connect, Learn, and Grow with PulseEvents",
-      "description": "Join thousands of professionals at our curated events",
+      "description": "Join thousands of professionals at our curated events. From tech conferences to wellness workshops, find your perfect event.",
       "ctaText": "Explore Events",
       "ctaLink": "/events",
-      "backgroundColor": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      "backgroundColor": "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)",
       "textColor": "#FFFFFF",
       "enabled": true,
       "priority": 1

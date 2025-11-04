@@ -1,7 +1,7 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BarChart3, FileText, Shield } from 'lucide-react';
+import { BarChart3, FileText, Shield, Megaphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const AdminPage = () => {
@@ -20,6 +20,12 @@ export const AdminPage = () => {
       icon: FileText,
       description: 'Track registrations and user actions',
     },
+    {
+      path: '/admin/marketing',
+      label: 'Marketing',
+      icon: Megaphone,
+      description: 'Manage banners and categories',
+    },
   ];
 
   return (
@@ -36,22 +42,24 @@ export const AdminPage = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <aside className="lg:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle>Navigation</CardTitle>
+          <Card className="sticky top-4 border-border/50 shadow-lg">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold">Navigation</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = location.pathname === item.path;
+                const isActive = location.pathname === item.path || location.pathname.startsWith(`${item.path}/`);
                 return (
                   <Button
                     key={item.path}
                     asChild
                     variant={isActive ? 'default' : 'ghost'}
                     className={cn(
-                      'w-full justify-start',
-                      isActive && 'bg-primary text-primary-foreground'
+                      'w-full justify-start transition-all',
+                      isActive 
+                        ? 'bg-primary text-primary-foreground shadow-md' 
+                        : 'hover:bg-accent hover:scale-105'
                     )}
                   >
                     <Link to={item.path}>

@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, MapPin, Users, Clock, DollarSign } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Event } from '@/types';
 import { cn } from '@/lib/utils';
 import { EventRegistrationModal } from './EventRegistrationModal';
+import { getCategoryConfig } from '@/lib/content';
+import { logAction } from '@/lib/analytics';
 
 interface EventCardProps {
   event: Event;
@@ -32,6 +34,31 @@ const formatTime = (dateString: string): string => {
 
 export const EventCard = ({ event, className }: EventCardProps) => {
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
+  const [categoryConfig, setCategoryConfig] = useState<{
+    icon: string;
+    color: string;
+    backgroundColor: string;
+    textColor: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (event.categoryId) {
+      getCategoryConfig(event.categoryId).then(config => {
+        if (config) {
+          setCategoryConfig(config);
+        }
+      });
+    }
+  }, [event.categoryId]);
+
+  useEffect(() => {
+    logAction({
+      action: 'view',
+      resource: 'event',
+      resourceId: event.id,
+    });
+  }, [event.id]);
+
   const isFull = event.capacity && event.registered
     ? event.registered >= event.capacity
     : false;
@@ -45,7 +72,18 @@ export const EventCard = ({ event, className }: EventCardProps) => {
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="text-xl line-clamp-2 flex-1">{event.title}</CardTitle>
           {event.category && (
-            <span className="px-2 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary whitespace-nowrap">
+            <span
+              className="px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap flex items-center gap-1"
+              style={
+                categoryConfig
+                  ? {
+                      backgroundColor: categoryConfig.backgroundColor,
+                      color: categoryConfig.textColor,
+                    }
+                  : undefined
+              }
+            >
+              {categoryConfig?.icon && <span>{categoryConfig.icon}</span>}
               {event.category}
             </span>
           )}
@@ -122,14 +160,22 @@ export const EventCard = ({ event, className }: EventCardProps) => {
               View Details
             </Link>
           </Button>
-          <Button
-            className="flex-1"
-            variant={isFull ? 'secondary' : 'default'}
-            disabled={isFull}
-            onClick={() => setIsRegistrationOpen(true)}
-          >
-            {isFull ? 'Full' : 'Register'}
-          </Button>
+              <Button
+                className="flex-1"
+                variant={isFull ? 'secondary' : 'default'}
+                disabled={isFull}
+                onClick={() => {
+                  logAction({
+                    action: 'click',
+                    resource: 'button',
+                    resourceId: event.id,
+                    metadata: { buttonText: 'Register' },
+                  });
+                  setIsRegistrationOpen(true);
+                }}
+              >
+                {isFull ? 'Full' : 'Register'}
+              </Button>
         </div>
       </CardFooter>
 

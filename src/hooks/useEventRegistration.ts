@@ -3,6 +3,7 @@ import { eventsApi } from '@/lib/api/events';
 import { EventRegistration } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { sendEmail } from '@/lib/emailjs';
+import { logAction } from '@/lib/analytics';
 
 export const useEventRegistration = () => {
   const queryClient = useQueryClient();
@@ -26,6 +27,17 @@ export const useEventRegistration = () => {
     onSuccess: async (data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ['event', variables.eventId] });
       await queryClient.invalidateQueries({ queryKey: ['events'] });
+
+      logAction({
+        action: 'register',
+        resource: 'event',
+        resourceId: variables.eventId,
+        metadata: {
+          attendeeName: variables.registration.attendeeName,
+          attendeeEmail: variables.registration.attendeeEmail,
+          registrationId: data.registrationId,
+        },
+      });
 
       const event = variables.eventDetails;
       const formatDate = (dateString: string) => {

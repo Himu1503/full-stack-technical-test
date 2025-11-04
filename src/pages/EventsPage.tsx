@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useDebounce } from 'use-debounce';
 import { useEvents } from '@/hooks/useEvents';
 import { EventCard } from '@/components/EventCard';
 import { SearchBar } from '@/components/SearchBar';
 import { FilterDropdown } from '@/components/FilterDropdown';
 import { PageLoader } from '@/components/Loader';
+import { logAction } from '@/lib/analytics';
 
 export const EventsPage = () => {
   const [search, setSearch] = useState('');
@@ -12,6 +13,43 @@ export const EventsPage = () => {
   const [type, setType] = useState('all');
   
   const [debouncedSearch] = useDebounce(search, 500);
+
+  useEffect(() => {
+    logAction({
+      action: 'view',
+      resource: 'events',
+    });
+  }, []);
+
+  useEffect(() => {
+    if (debouncedSearch) {
+      logAction({
+        action: 'search',
+        resource: 'events',
+        metadata: { searchTerm: debouncedSearch },
+      });
+    }
+  }, [debouncedSearch]);
+
+  useEffect(() => {
+    if (category !== 'all') {
+      logAction({
+        action: 'filter',
+        resource: 'category',
+        resourceId: category,
+      });
+    }
+  }, [category]);
+
+  useEffect(() => {
+    if (type !== 'all') {
+      logAction({
+        action: 'filter',
+        resource: 'type',
+        resourceId: type,
+      });
+    }
+  }, [type]);
 
   const { data: events = [], isLoading, error } = useEvents({
     search: debouncedSearch || undefined,

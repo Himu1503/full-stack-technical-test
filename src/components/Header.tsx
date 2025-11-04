@@ -29,6 +29,12 @@ export const Header = () => {
             >
               <Link to="/events">Events</Link>
             </Button>
+            <Button
+              asChild
+              variant={location.pathname.startsWith('/admin') ? 'default' : 'ghost'}
+            >
+              <Link to="/admin">Admin</Link>
+            </Button>
           </nav>
         </div>
       </div>

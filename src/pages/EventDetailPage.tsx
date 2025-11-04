@@ -8,7 +8,8 @@ import { EventRegistrationModal } from '@/components/EventRegistrationModal';
 import { EventMap } from '@/components/EventMap';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { logAction } from '@/lib/analytics';
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -34,6 +35,16 @@ export const EventDetailPage = () => {
   const navigate = useNavigate();
   const { data: event, isLoading, error } = useEvent(id || '');
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      logAction({
+        action: 'view',
+        resource: 'event',
+        resourceId: id,
+      });
+    }
+  }, [id]);
 
   if (isLoading) {
     return <PageLoader />;

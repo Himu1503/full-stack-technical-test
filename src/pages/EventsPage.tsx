@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useDebounce } from 'use-debounce';
 import { useEvents } from '@/hooks/useEvents';
 import { EventCard } from '@/components/EventCard';
 import { SearchBar } from '@/components/SearchBar';
@@ -9,33 +10,96 @@ export const EventsPage = () => {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [type, setType] = useState('all');
+  
+  const [debouncedSearch] = useDebounce(search, 500);
 
-  const { data: events = [], isLoading, error, isError } = useEvents({
-    search: search || undefined,
+  const { data: events = [], isLoading, error } = useEvents({
+    search: debouncedSearch || undefined,
     category: category !== 'all' ? category : undefined,
     type: type !== 'all' ? type : undefined,
   });
 
-  console.log('EventsPage render:', {
-    eventsCount: events.length,
-    isLoading,
-    isError,
-    error: error?.message,
-    events: events.slice(0, 2),
-  });
+  const { data: allEvents = [] } = useEvents({});
 
   const categories = useMemo(() => {
-    const uniqueCategories = Array.from(
-      new Set(events.map((e) => e.category).filter(Boolean))
-    );
-    return uniqueCategories.map((cat) => ({
-      value: cat || '',
-      label: cat || '',
-    }));
-  }, [events]);
+    const categoryMap = new Map<string, { id: string; name: string }>();
+    
+    allEvents.forEach((event) => {
+      if (event.category && event.categoryId) {
+        if (!categoryMap.has(event.categoryId)) {
+          categoryMap.set(event.categoryId, {
+            id: event.categoryId,
+            name: event.category,
+          });
+        }
+      }
+    });
+    
+    return Array.from(categoryMap.values())
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((cat) => ({
+        value: cat.id,
+        label: cat.name,
+      }));
+  }, [allEvents]);
 
+  const groupedEvents = useMemo(() => {
+    const sorted = [...events].sort((a, b) => {
+      const typeA = a.type || '';
+      const typeB = b.type || '';
+      const categoryA = a.category || '';
+      const categoryB = b.category || '';
+      
+      // If a type filter is selected, prioritize that type
+      // Otherwise, default to physical first, then online
+      const typeOrder: Record<string, number> = 
+        type !== 'all' && type === 'online'
+          ? { online: 1, physical: 2 } // Online first if selected
+          : type !== 'all' && type === 'physical'
+          ? { physical: 1, online: 2 } // Physical first if selected
+          : { physical: 1, online: 2 }; // Default: Physical first
+      
+      const typeOrderA = typeOrder[typeA] || 999;
+      const typeOrderB = typeOrder[typeB] || 999;
+      
+      if (typeOrderA !== typeOrderB) {
+        return typeOrderA - typeOrderB;
+      }
+      
+      if (categoryA !== categoryB) {
+        return categoryA.localeCompare(categoryB);
+      }
+      
+      return a.title.localeCompare(b.title);
+    });
+    
+    const grouped = sorted.reduce((acc, event) => {
+      const eventType = event.type || 'Uncategorized';
+      const eventCategory = event.category || 'Uncategorized';
+      const groupKey = `${eventType}|${eventCategory}`;
+      
+      if (!acc[groupKey]) {
+        acc[groupKey] = {
+          type: eventType,
+          category: eventCategory,
+          events: [],
+        };
+      }
+      acc[groupKey].events.push(event);
+      return acc;
+    }, {} as Record<string, { type: string; category: string; events: typeof events }>);
+    
+    return grouped;
+  }, [events, type]);
 
-  if (isLoading) {
+  const sortedEvents = useMemo(() => {
+    return Object.values(groupedEvents).flatMap(group => group.events);
+  }, [groupedEvents]);
+
+  const isSearching = search !== debouncedSearch;
+  const showLoading = isLoading || isSearching;
+
+  if (showLoading && events.length === 0) {
     return <PageLoader />;
   }
 
@@ -80,26 +144,72 @@ export const EventsPage = () => {
         </div>
       </div>
 
-      {events.length === 0 && !isLoading ? (
+      {isSearching && (
+        <div className="mb-4 text-sm text-muted-foreground">
+          Searching for "{search}"...
+        </div>
+      )}
+
+      {sortedEvents.length === 0 && !showLoading ? (
         <div className="text-center py-12">
           <p className="text-muted-foreground text-lg">
-            No events found. Try adjusting your filters.
+            No events found{debouncedSearch ? ` matching "${debouncedSearch}"` : ''}. Try adjusting your filters.
           </p>
         </div>
       ) : (
         <>
-          {events.length > 0 && (
-            <div className="mb-4">
+          {sortedEvents.length > 0 && (
+            <div className="mb-4 flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                Showing {events.length} event{events.length !== 1 ? 's' : ''}
+                Showing {sortedEvents.length} event{sortedEvents.length !== 1 ? 's' : ''}
+                {debouncedSearch && (
+                  <span className="ml-2">for "{debouncedSearch}"</span>
+                )}
               </p>
+              {isSearching && (
+                <div className="text-xs text-muted-foreground">
+                  Searching...
+                </div>
+              )}
             </div>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events.map((event) => (
-              <EventCard key={event.id} event={event} />
+          {Object.values(groupedEvents)
+            .sort((a, b) => {
+              // If a type filter is selected, prioritize that type
+              // Otherwise, default to physical first, then online
+              const typeOrder: Record<string, number> = 
+                type !== 'all' && type === 'online'
+                  ? { online: 1, physical: 2 } // Online first if selected
+                  : type !== 'all' && type === 'physical'
+                  ? { physical: 1, online: 2 } // Physical first if selected
+                  : { physical: 1, online: 2 }; // Default: Physical first
+              
+              const typeOrderA = typeOrder[a.type] || 999;
+              const typeOrderB = typeOrder[b.type] || 999;
+              
+              if (typeOrderA !== typeOrderB) {
+                return typeOrderA - typeOrderB;
+              }
+              
+              return (a.category || '').localeCompare(b.category || '');
+            })
+            .map((group, index) => (
+              <div key={`${group.type}-${group.category}-${index}`} className="mb-8">
+                <div className="flex items-center gap-3 mb-4 pb-2 border-b">
+                  <h2 className="text-2xl font-semibold">
+                    {group.type === 'physical' ? '📍 In-Person' : '🌐 Online'} - {group.category}
+                  </h2>
+                  <span className="text-base font-normal text-muted-foreground">
+                    ({group.events.length} event{group.events.length !== 1 ? 's' : ''})
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {group.events.map((event) => (
+                    <EventCard key={event.id} event={event} />
+                  ))}
+                </div>
+              </div>
             ))}
-          </div>
         </>
       )}
     </div>

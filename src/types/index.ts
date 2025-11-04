@@ -6,6 +6,7 @@ export interface Event {
   time?: string;
   location?: string;
   category?: string;
+  categoryId?: string;
   type?: 'online' | 'physical';
   capacity?: number;
   registered?: number;
@@ -25,6 +26,13 @@ export interface EventRegistrationResponse {
   success: boolean;
   message?: string;
   registrationId?: string;
+  event?: Event;
+  attendee?: {
+    email: string;
+    name: string;
+    groupSize?: number;
+    registeredAt?: string;
+  };
 }
 
 export interface EventsQueryParams {

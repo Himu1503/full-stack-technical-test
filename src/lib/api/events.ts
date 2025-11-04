@@ -1,5 +1,4 @@
 import { apiClient } from '../api';
-import { API_BASE_URL } from '../constants';
 import { Event, EventRegistration, EventRegistrationResponse, EventsQueryParams } from '@/types';
 
 interface ApiEvent {
@@ -28,6 +27,7 @@ const transformApiEvent = (apiEvent: ApiEvent): Event => {
     date: apiEvent.date,
     time: apiEvent.time,
     category: apiEvent.category?.name,
+    categoryId: apiEvent.category?.id,
     type: apiEvent.location?.type,
     capacity: apiEvent.capacity?.max,
     registered: apiEvent.capacity?.registered,
@@ -58,12 +58,9 @@ export const eventsApi = {
     const endpoint = `/events${queryString ? `?${queryString}` : ''}`;
     
     try {
-      console.log('Fetching events from:', `${API_BASE_URL}${endpoint}`);
       const response = await apiClient.get<ApiEventsResponse>(endpoint);
-      console.log('API Response received:', response);
       
       if (!response) {
-        console.error('Empty API response');
         return [];
       }
       
@@ -72,19 +69,9 @@ export const eventsApi = {
         return [];
       }
       
-      console.log(`Transforming ${response.events.length} events`);
-      const transformed = response.events.map(transformApiEvent);
-      console.log('Transformed events:', transformed);
-      return transformed;
+      return response.events.map(transformApiEvent);
     } catch (error) {
       console.error('Error fetching events:', error);
-      if (error instanceof Error) {
-        console.error('Error details:', {
-          message: error.message,
-          name: error.name,
-          stack: error.stack,
-        });
-      }
       throw error;
     }
   },
@@ -92,16 +79,13 @@ export const eventsApi = {
   getById: async (id: string): Promise<Event> => {
     try {
       const response = await apiClient.get<{ event: ApiEvent }>(`/events/${id}`);
-      console.log('Event detail API response:', response);
       
       const apiEvent = response.event || (response as unknown as ApiEvent);
       if (!apiEvent) {
         throw new Error('Event data not found in API response');
       }
       
-      const transformed = transformApiEvent(apiEvent);
-      console.log('Transformed event:', transformed);
-      return transformed;
+      return transformApiEvent(apiEvent);
     } catch (error) {
       console.error('Error fetching event details:', error);
       throw error;
@@ -112,10 +96,21 @@ export const eventsApi = {
     eventId: string,
     registration: EventRegistration
   ): Promise<EventRegistrationResponse> => {
-    return apiClient.post<EventRegistrationResponse>(
-      `/events/${eventId}/register`,
-      registration
-    );
+    try {
+      const response = await apiClient.post<EventRegistrationResponse>(
+        `/events/${eventId}/register`,
+        registration
+      );
+      
+      if (!response.success) {
+        throw new Error(response.message || 'Registration failed');
+      }
+      
+      return response;
+    } catch (error) {
+      console.error('Error registering for event:', error);
+      throw error;
+    }
   },
 };
 

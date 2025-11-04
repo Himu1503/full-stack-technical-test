@@ -57,8 +57,6 @@ export const apiClient = {
   get: async <T>(endpoint: string, signal?: AbortSignal): Promise<T> => {
     try {
       const url = `${API_BASE_URL}${endpoint}`;
-      console.log('API GET Request:', url);
-      console.log('Headers:', getHeaders());
       
       const response = await fetch(url, {
         method: 'GET',
@@ -66,9 +64,6 @@ export const apiClient = {
         signal,
       });
 
-      console.log('API Response status:', response.status);
-      console.log('API Response headers:', Object.fromEntries(response.headers.entries()));
-      
       const contentType = response.headers.get('content-type');
       if (!contentType?.includes('application/json')) {
         const text = await response.text();
@@ -99,12 +94,24 @@ export const apiClient = {
     signal?: AbortSignal
   ): Promise<T> => {
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const url = `${API_BASE_URL}${endpoint}`;
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(body),
         signal,
       });
+
+      const contentType = response.headers.get('content-type');
+      if (!contentType?.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response received:', text.substring(0, 500));
+        throw new ApiError(
+          `Expected JSON response but received ${contentType}. URL was: ${url}`,
+          response.status
+        );
+      }
 
       return handleResponse<T>(response);
     } catch (error) {

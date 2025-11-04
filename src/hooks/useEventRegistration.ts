@@ -40,6 +40,13 @@ export const useEventRegistration = () => {
         });
       };
 
+      const formatPrice = (price?: number | null): string => {
+        if (price === undefined || price === null) {
+          return 'Price not specified';
+        }
+        return price === 0 ? 'Free' : `$${price}`;
+      };
+
       const emailMessage = event
         ? `Dear ${variables.registration.attendeeName},
 
@@ -48,7 +55,7 @@ Thank you for registering for "${event.title}"!
 Event Details:
 • Date & Time: ${formatDate(event.date)}
 ${event.location ? `• Location: ${event.location}` : '• Type: Online Event'}
-${event.price !== undefined ? `• Price: ${event.price === 0 ? 'Free' : `$${event.price}`}` : ''}
+• Price: ${formatPrice(event.price)}
 
 We're excited to have you join us! A confirmation email has been sent to ${variables.registration.attendeeEmail}.
 
@@ -66,7 +73,9 @@ Best regards,
 PulseEvents Team`;
 
       try {
-        await sendEmail({
+        const formattedPrice = event ? formatPrice(event.price) : 'Price not specified';
+        
+        const emailParams = {
           to_name: variables.registration.attendeeName,
           to_email: variables.registration.attendeeEmail,
           subject: `Registration Confirmation - ${event?.title || 'Event'}`,
@@ -75,21 +84,34 @@ PulseEvents Team`;
           event_title: event?.title,
           event_date: event ? formatDate(event.date) : '',
           event_location: event?.location || 'Online',
-          event_price: event?.price !== undefined ? (event.price === 0 ? 'Free' : `$${event.price}`) : '',
-        });
+          event_price: formattedPrice,
+          total_price: formattedPrice,
+        };
+        
+        console.log('Sending email with params:', emailParams);
+        
+        await sendEmail(emailParams);
 
+        const registrationInfo = data.registrationId 
+          ? `Registration ID: ${data.registrationId}`
+          : '';
+        
         toast({
           title: 'Registration Successful! 🎉',
-          description: `You've been registered! A confirmation email has been sent to ${variables.registration.attendeeEmail}.`,
-          duration: 5000,
+          description: `You've been registered! A confirmation email has been sent to ${variables.registration.attendeeEmail}. ${registrationInfo}`,
+          duration: 6000,
         });
       } catch (error) {
         console.error('Failed to send confirmation email:', error);
+        const registrationInfo = data.registrationId 
+          ? ` Registration ID: ${data.registrationId}`
+          : '';
+        
         toast({
           title: 'Registration Successful!',
-          description: data.message || 'You have successfully registered for this event. However, we encountered an issue sending the confirmation email.',
+          description: `${data.message || 'You have successfully registered for this event. However, we encountered an issue sending the confirmation email.'}${registrationInfo}`,
           variant: 'default',
-          duration: 5000,
+          duration: 6000,
         });
       }
     },

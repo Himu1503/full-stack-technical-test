@@ -21,6 +21,7 @@ export interface EmailParams {
   event_date?: string;
   event_location?: string;
   event_price?: string;
+  total_price?: string;
   [key: string]: unknown;
 }
 

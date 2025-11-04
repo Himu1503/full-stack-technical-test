@@ -1,7 +1,6 @@
 # PulseEvents - Modern Events Management Platform
 
-Project Live Link: https://full-stack-technical-test-94ngl5gf5-himu1503s-projects.vercel.app/ 
-
+Project Live Link: https://full-stack-technical-test-3dib.vercel.app/
 
 <div align="center">
 

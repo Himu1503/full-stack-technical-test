@@ -16,6 +16,7 @@ export interface EmailParams {
   to_email?: string;
   subject?: string;
   message?: string;
+  event_name?: string;
   [key: string]: unknown;
 }
 

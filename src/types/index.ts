@@ -10,12 +10,26 @@ export interface Event {
   capacity?: number;
   registered?: number;
   image?: string;
+  organizer?: string;
+  price?: number;
+  tags?: string[];
 }
 
 export interface EventRegistration {
-  eventId: string;
-  name: string;
-  email: string;
-  phone?: string;
+  attendeeName: string;
+  attendeeEmail: string;
+  attendeePhone?: string;
 }
 
+export interface EventRegistrationResponse {
+  success: boolean;
+  message?: string;
+  registrationId?: string;
+}
+
+export interface EventsQueryParams {
+  category?: string;
+  type?: 'online' | 'physical';
+  search?: string;
+  date?: string;
+}

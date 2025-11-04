@@ -49,6 +49,7 @@ PulseEvents is a comprehensive events management platform that enables users to 
 
 #### 🏠 Landing Page
 - Information about the product
+- Marketing Banner for discounts and awarness 
 
 #### 📅 Event Discovery
 - **Event Listing**: Browse all available events with search and filtering
@@ -97,10 +98,13 @@ PulseEvents is a comprehensive events management platform that enables users to 
   - Export registrations only as CSV
 - **Statistics Dashboard**: Quick stats on registrations, views, and events
 
-  #### 🎯 Bonus:
+  ### 🎯 Bonus
+  
   - ** Seprate Section to create Marketing Banner
   - ** Seprate from code so easy for non-techincal person to manage the application
-
+  - ** Easy to manage and configure the colors and theme
+ 
+    
 ## 🛠 Tech Stack
 
 ### Frontend

@@ -86,9 +86,9 @@ PulseEvents is a comprehensive events management platform that enables users to 
 
   ### 🎯 Bonus
   
-  - ** Seprate Section to create Marketing Banner
-  - ** Seprate from code so easy for non-techincal person to manage the application
-  - ** Easy to manage and configure the colors and theme
+  -  Seprate Section to create Marketing Banner
+  -  Seprate from code so easy for non-techincal person to manage the application
+  -  Easy to manage and configure the colors and theme
  
     
 ## 🛠 Tech Stack
@@ -130,47 +130,103 @@ PulseEvents is a comprehensive events management platform that enables users to 
 ```
 full-stack-technical-test/
 ├── public/
-│   ├── content/              # Content management files
-│   │   ├── categories.json   # Category configurations
-│   │   └── marketing.json    # Marketing banners & content
-│   └── favicon.svg          # Site favicon
+│   ├── assets/
+│   │   └── README.md              # Assets documentation
+│   ├── content/                    # Content management files
+│   │   ├── categories.json         # Category configurations (fallback)
+│   │   └── marketing.json          # Marketing banners & content (fallback)
+│   └── favicon.svg                 # Site favicon
+│
 ├── src/
-│   ├── components/          # React components
-│   │   ├── ui/             # Shadcn UI components
-│   │   ├── EventCard.tsx   # Event display card
-│   │   ├── EventMap.tsx     # Interactive map component
-│   │   ├── Header.tsx       # Navigation header
-│   │   ├── Footer.tsx       # Site footer
-│   │   └── ...
-│   ├── pages/              # Page components
-│   │   ├── EventsPage.tsx  # Events listing page
-│   │   ├── EventDetailPage.tsx # Event detail page
-│   │   ├── AnalyticsPage.tsx   # Analytics dashboard
-│   │   ├── AuditLogsPage.tsx  # Audit logs page
-│   │   └── AdminPage.tsx      # Admin layout
-│   ├── hooks/              # Custom React hooks
-│   │   ├── useEvents.ts    # Events data fetching
-│   │   ├── useEventRegistration.ts # Registration logic
-│   │   └── ...
-│   ├── lib/                # Utility libraries
-│   │   ├── api/            # API client
-│   │   │   └── events.ts   # Events API functions
-│   │   ├── api.ts          # Base API client
-│   │   ├── analytics.ts    # Analytics & audit logging
-│   │   ├── content.ts      # Content management
-│   │   ├── emailjs.ts      # EmailJS integration
-│   │   └── constants.ts    # Environment constants
-│   ├── types/              # TypeScript type definitions
-│   │   └── index.ts        # Shared types
-│   ├── App.tsx             # Main app component
-│   └── main.tsx            # Application entry point
-├── .env                    # Environment variables (gitignored)
-├── .gitignore             # Git ignore rules
-├── package.json           # Dependencies & scripts
-├── tsconfig.json          # TypeScript configuration
-├── tailwind.config.js     # TailwindCSS configuration
-├── vite.config.ts         # Vite configuration
-└── vercel.json            # Vercel deployment config
+│   ├── __mocks__/                  # Test mocks
+│   │   └── vite-env.ts             # Vite environment mock
+│   │
+│   ├── components/                 # React components
+│   │   ├── __tests__/              # Component tests
+│   │   │   └── Logo.test.tsx       # Logo component tests
+│   │   │
+│   │   ├── ui/                     # Shadcn UI components
+│   │   │   ├── __tests__/
+│   │   │   │   └── button.test.tsx # Button component tests
+│   │   │   ├── badge.tsx           # Badge component
+│   │   │   ├── button.tsx          # Button component
+│   │   │   ├── card.tsx            # Card component
+│   │   │   ├── dialog.tsx          # Dialog/Modal component
+│   │   │   ├── form.tsx            # Form components
+│   │   │   ├── input.tsx           # Input component
+│   │   │   ├── label.tsx           # Label component
+│   │   │   ├── select.tsx          # Select dropdown component
+│   │   │   ├── separator.tsx       # Separator component
+│   │   │   ├── toast.tsx           # Toast notification component
+│   │   │   └── toaster.tsx         # Toast provider
+│   │   │
+│   │   ├── EventCard.tsx           # Event display card component
+│   │   ├── EventMap.tsx            # Interactive map component (Leaflet)
+│   │   ├── EventRegistrationModal.tsx # Registration modal/form
+│   │   ├── FilterDropdown.tsx      # Filter dropdown component
+│   │   ├── Footer.tsx              # Site footer component
+│   │   ├── Header.tsx              # Navigation header component
+│   │   ├── Loader.tsx              # Loading spinner component
+│   │   ├── Logo.tsx                # Logo component
+│   │   └── SearchBar.tsx           # Search input component
+│   │
+│   ├── hooks/                      # Custom React hooks
+│   │   ├── __tests__/              # Hook tests
+│   │   │   └── useEmail.test.ts    # Email hook tests
+│   │   │
+│   │   ├── use-toast.ts            # Toast notification hook
+│   │   ├── useEmail.ts             # Email utility hook
+│   │   ├── useEventRegistration.ts # Event registration hook
+│   │   └── useEvents.ts            # Events data fetching hook
+│   │
+│   ├── lib/                        # Utility libraries
+│   │   ├── __tests__/              # Library tests
+│   │   │   ├── api.test.ts         # API client tests
+│   │   │   ├── constants.test.ts   # Constants tests
+│   │   │   └── utils.test.ts       # Utility function tests
+│   │   │
+│   │   ├── api/                    # API client modules
+│   │   │   └── events.ts           # Events API functions
+│   │   │
+│   │   ├── analytics.ts            # Analytics & audit logging
+│   │   ├── api.ts                  # Base API client
+│   │   ├── constants.ts            # Environment constants
+│   │   ├── content.ts              # Content management utilities
+│   │   ├── contentManager.ts       # Content CRUD operations
+│   │   ├── emailjs.ts              # EmailJS integration
+│   │   └── utils.ts                # Utility functions (cn, etc.)
+│   │
+│   ├── pages/                      # Page components
+│   │   ├── AdminPage.tsx           # Admin layout wrapper
+│   │   ├── AnalyticsPage.tsx        # Analytics dashboard page
+│   │   ├── AuditLogsPage.tsx       # Audit logs page
+│   │   ├── EventDetailPage.tsx     # Event detail page
+│   │   ├── EventsPage.tsx          # Events listing page
+│   │   └── MarketingManagementPage.tsx # Marketing content management
+│   │
+│   ├── types/                      # TypeScript type definitions
+│   │   └── index.ts                # Shared types & interfaces
+│   │
+│   ├── App.tsx                     # Main app component (routing)
+│   ├── index.css                   # Global styles & Tailwind imports
+│   ├── main.tsx                    # Application entry point
+│   ├── setupTests.ts               # Jest test setup
+│   ├── test-utils.tsx              # Testing utilities & providers
+│   └── vite-env.d.ts               # Vite type declarations
+│
+├── .env                            # Environment variables (gitignored)
+├── .gitignore                      # Git ignore rules
+│
+├── components.json                  # Shadcn UI configuration
+├── jest.config.cjs                  # Jest test configuration
+├── package.json                     # Dependencies & scripts
+├── package-lock.json                # Dependency lock file
+├── postcss.config.js                # PostCSS configuration
+├── tailwind.config.js               # TailwindCSS configuration
+├── tsconfig.json                    # TypeScript configuration
+├── tsconfig.node.json               # TypeScript config for Node
+├── vercel.json                      # Vercel deployment configuration
+└── vite.config.ts                   # Vite build configuration
 ```
 
 
@@ -241,6 +297,17 @@ Access via `/admin/audit-logs`:
 - **Search & Filter**: Find specific logs quickly
 - **Export Options**: JSON and CSV export formats
 - **Statistics**: Quick stats on registrations and events
+
+
+### Marketing Banners
+
+Access via `/admin/marketing`:
+
+- Marketing Banner for Discount
+- Seperate from the code
+- User Friendly
+- Easy to manage by non-technical person. 
+
 
 ### Data Storage
 

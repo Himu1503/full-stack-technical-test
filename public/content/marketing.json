@@ -1,0 +1,37 @@
+{
+  "banners": [
+    {
+      "id": "hero-banner",
+      "title": "Discover Amazing Events",
+      "subtitle": "Connect, Learn, and Grow with PulseEvents",
+      "description": "Join thousands of professionals at our curated events",
+      "ctaText": "Explore Events",
+      "ctaLink": "/events",
+      "backgroundColor": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      "textColor": "#FFFFFF",
+      "enabled": true,
+      "priority": 1
+    }
+  ],
+  "promotionalContent": {
+    "headline": "Why Choose PulseEvents?",
+    "features": [
+      {
+        "title": "Easy Registration",
+        "description": "Register for events in seconds",
+        "icon": "⚡"
+      },
+      {
+        "title": "Instant Confirmation",
+        "description": "Get immediate email confirmations",
+        "icon": "✉️"
+      },
+      {
+        "title": "Diverse Events",
+        "description": "From tech to wellness, find your passion",
+        "icon": "🎯"
+      }
+    ]
+  }
+}
+

@@ -1,0 +1,50 @@
+{
+  "categories": [
+    {
+      "id": "technology",
+      "name": "Technology",
+      "description": "Cutting-edge tech events, workshops, and conferences",
+      "icon": "💻",
+      "color": "#3B82F6",
+      "backgroundColor": "#EFF6FF",
+      "textColor": "#1E40AF"
+    },
+    {
+      "id": "business",
+      "name": "Business",
+      "description": "Networking events, business conferences, and workshops",
+      "icon": "💼",
+      "color": "#10B981",
+      "backgroundColor": "#ECFDF5",
+      "textColor": "#065F46"
+    },
+    {
+      "id": "design",
+      "name": "Design",
+      "description": "Creative design events, workshops, and exhibitions",
+      "icon": "🎨",
+      "color": "#8B5CF6",
+      "backgroundColor": "#F5F3FF",
+      "textColor": "#6B21A8"
+    },
+    {
+      "id": "health",
+      "name": "Health & Wellness",
+      "description": "Health, fitness, and wellness events",
+      "icon": "🏥",
+      "color": "#EF4444",
+      "backgroundColor": "#FEF2F2",
+      "textColor": "#991B1B"
+    },
+    {
+      "id": "marketing",
+      "name": "Marketing",
+      "description": "Marketing strategies, digital marketing, and branding events",
+      "icon": "📢",
+      "color": "#F59E0B",
+      "backgroundColor": "#FFFBEB",
+      "textColor": "#92400E"
+    }
+  ]
+}
+

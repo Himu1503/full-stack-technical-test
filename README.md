@@ -15,20 +15,6 @@ Project Live Link: https://pulse-events-test-solution.vercel.app/
 
 </div>
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Configuration](#configuration)
-- [Content Management](#content-management)
-- [Analytics & Audit Logs](#analytics--audit-logs)
-- [API Integration](#api-integration)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
 
 ## 🎯 Overview
 

@@ -1,6 +1,6 @@
 # PulseEvents - Modern Events Management Platform
 
-Project Live Link: https://full-stack-technical-test-3dib.vercel.app/
+Project Live Link: https://pulse-events-test-solution.vercel.app/
 
 <div align="center">
 
@@ -96,6 +96,10 @@ PulseEvents is a comprehensive events management platform that enables users to 
   - Export all logs as CSV
   - Export registrations only as CSV
 - **Statistics Dashboard**: Quick stats on registrations, views, and events
+
+  #### 🎯 Bonus:
+  - ** Seprate Section to create Marketing Banner
+  - ** Seprate from code so easy for non-techincal person to manage the application
 
 ## 🛠 Tech Stack
 

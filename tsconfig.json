@@ -22,6 +22,7 @@
     "types": ["vite/client"]
   },
   "include": ["src"],
+  "exclude": ["src/**/__tests__/**", "src/**/__mocks__/**", "src/**/*.test.ts", "src/**/*.test.tsx", "src/setupTests.ts", "src/test-utils.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
 

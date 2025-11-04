@@ -20,6 +20,8 @@ export interface EventRegistration {
   attendeeName: string;
   attendeeEmail: string;
   attendeePhone?: string;
+  quantity?: number;
+  discountCode?: string;
 }
 
 export interface EventRegistrationResponse {

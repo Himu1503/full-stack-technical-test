@@ -22,6 +22,11 @@ export const useEventRegistration = () => {
         date: string;
         location?: string;
         price?: number;
+        quantity?: number;
+        discountCode?: string;
+        discountAmount?: number;
+        subtotal?: number;
+        total?: number;
       };
     }) => eventsApi.register(eventId, registration),
     onSuccess: async (data, variables) => {
@@ -56,9 +61,12 @@ export const useEventRegistration = () => {
         if (price === undefined || price === null) {
           return 'Price not specified';
         }
-        return price === 0 ? 'Free' : `$${price}`;
+        return price === 0 ? 'Free' : `$${price.toFixed(2)}`;
       };
 
+      const quantity = event?.quantity || 1;
+      const hasDiscount = event?.discountCode && event?.discountAmount && event.discountAmount > 0;
+      
       const emailMessage = event
         ? `Dear ${variables.registration.attendeeName},
 
@@ -67,7 +75,12 @@ Thank you for registering for "${event.title}"!
 Event Details:
 • Date & Time: ${formatDate(event.date)}
 ${event.location ? `• Location: ${event.location}` : '• Type: Online Event'}
-• Price: ${formatPrice(event.price)}
+• Number of Tickets: ${quantity}
+• Price per Ticket: ${formatPrice(event.price)}
+${hasDiscount ? `• Discount Code: ${event.discountCode}` : ''}
+${hasDiscount ? `• Discount Amount: -${formatPrice(event.discountAmount)}` : ''}
+${event?.subtotal ? `• Subtotal: ${formatPrice(event.subtotal)}` : ''}
+• Total: ${formatPrice(event?.total ?? event.price)}
 
 We're excited to have you join us! A confirmation email has been sent to ${variables.registration.attendeeEmail}.
 
@@ -85,7 +98,9 @@ Best regards,
 PulseEvents Team`;
 
       try {
-        const formattedPrice = event ? formatPrice(event.price) : 'Price not specified';
+        const formattedPrice = event?.total !== undefined 
+          ? formatPrice(event.total) 
+          : event ? formatPrice(event.price) : 'Price not specified';
         
         const emailParams = {
           to_name: variables.registration.attendeeName,
@@ -96,8 +111,11 @@ PulseEvents Team`;
           event_title: event?.title,
           event_date: event ? formatDate(event.date) : '',
           event_location: event?.location || 'Online',
-          event_price: formattedPrice,
+          event_price: event ? formatPrice(event.price) : 'Price not specified',
           total_price: formattedPrice,
+          quantity: quantity.toString(),
+          discount_code: event?.discountCode || '',
+          discount_amount: event?.discountAmount ? formatPrice(event.discountAmount) : '',
         };
         
         console.log('Sending email with params:', emailParams);

@@ -17,10 +17,15 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
-const getHeaders = () => ({
-  'Content-Type': 'application/json',
-  ...(API_KEY && { 'x-api-key': API_KEY }),
-});
+const getHeaders = () => {
+  if (!API_KEY) {
+    console.warn('API_KEY is not set. API requests may fail.');
+  }
+  return {
+    'Content-Type': 'application/json',
+    ...(API_KEY && { 'x-api-key': API_KEY }),
+  };
+};
 
 const handleResponse = async <T>(response: Response): Promise<T> => {
   const contentType = response.headers.get('content-type');
@@ -54,15 +59,19 @@ const handleResponse = async <T>(response: Response): Promise<T> => {
 };
 
 export const apiClient = {
-  get: async <T>(endpoint: string, signal?: AbortSignal): Promise<T> => {
-    try {
-      const url = `${API_BASE_URL}${endpoint}`;
-      
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: getHeaders(),
-        signal,
-      });
+      get: async <T>(endpoint: string, signal?: AbortSignal): Promise<T> => {
+        if (!API_BASE_URL) {
+          throw new ApiError('API_BASE_URL is not configured. Please set VITE_API_BASE_URL in your environment variables.');
+        }
+        
+        try {
+          const url = `${API_BASE_URL}${endpoint}`;
+          
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: getHeaders(),
+            signal,
+          });
 
       const contentType = response.headers.get('content-type');
       if (!contentType?.includes('application/json')) {
@@ -88,13 +97,17 @@ export const apiClient = {
     }
   },
 
-  post: async <T>(
-    endpoint: string,
-    body: unknown,
-    signal?: AbortSignal
-  ): Promise<T> => {
-    try {
-      const url = `${API_BASE_URL}${endpoint}`;
+      post: async <T>(
+        endpoint: string,
+        body: unknown,
+        signal?: AbortSignal
+      ): Promise<T> => {
+        if (!API_BASE_URL) {
+          throw new ApiError('API_BASE_URL is not configured. Please set VITE_API_BASE_URL in your environment variables.');
+        }
+        
+        try {
+          const url = `${API_BASE_URL}${endpoint}`;
       
       const response = await fetch(url, {
         method: 'POST',

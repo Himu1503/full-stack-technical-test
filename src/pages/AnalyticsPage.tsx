@@ -114,6 +114,23 @@ export const AnalyticsPage = () => {
     }
   };
 
+  // Helper function to parse color (handles hex and rgba)
+  const parseColor = (color: string): string => {
+    if (!color) return 'rgba(107, 114, 128, 0.8)'; // Default gray
+    if (color.startsWith('#')) {
+      const r = parseInt(color.slice(1, 3), 16);
+      const g = parseInt(color.slice(3, 5), 16);
+      const b = parseInt(color.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, 0.8)`;
+    }
+    // If already rgba or rgb, return as is
+    if (color.includes('rgba')) return color;
+    if (color.includes('rgb')) {
+      return color.replace('rgb', 'rgba').replace(')', ', 0.8)');
+    }
+    return `rgba(107, 114, 128, 0.8)`; // Default fallback
+  };
+
   const categoryStats = useMemo(() => {
     const allCategoryIds = new Set([
       ...Object.keys(analytics.categoryViews),
@@ -141,13 +158,7 @@ export const AnalyticsPage = () => {
       {
         label: 'Category Views',
         data: categoryStats.map(cat => cat.views),
-        backgroundColor: categoryStats.map(cat => {
-          const color = cat.color;
-          const r = parseInt(color.slice(1, 3), 16);
-          const g = parseInt(color.slice(3, 5), 16);
-          const b = parseInt(color.slice(5, 7), 16);
-          return `rgba(${r}, ${g}, ${b}, 0.8)`;
-        }),
+        backgroundColor: categoryStats.map(cat => parseColor(cat.color)),
         borderColor: categoryStats.map(cat => cat.color),
         borderWidth: 1,
       },
@@ -160,13 +171,7 @@ export const AnalyticsPage = () => {
       {
         label: 'Registrations',
         data: categoryStats.map(cat => cat.registrations),
-        backgroundColor: categoryStats.map(cat => {
-          const color = cat.color;
-          const r = parseInt(color.slice(1, 3), 16);
-          const g = parseInt(color.slice(3, 5), 16);
-          const b = parseInt(color.slice(5, 7), 16);
-          return `rgba(${r}, ${g}, ${b}, 0.8)`;
-        }),
+        backgroundColor: categoryStats.map(cat => parseColor(cat.color)),
         borderColor: categoryStats.map(cat => cat.color),
         borderWidth: 1,
       },
@@ -363,17 +368,26 @@ export const AnalyticsPage = () => {
                   <CardTitle>Category Views</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Bar
-                    data={categoryViewsData}
-                    options={{
-                      responsive: true,
-                      plugins: {
-                        legend: {
-                          display: false,
-                        },
-                      },
-                    }}
-                  />
+                  {categoryStats.length > 0 ? (
+                    <div className="h-64">
+                      <Bar
+                        data={categoryViewsData}
+                        options={{
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          plugins: {
+                            legend: {
+                              display: false,
+                            },
+                          },
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-64 flex items-center justify-center text-muted-foreground">
+                      No data available
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -382,17 +396,26 @@ export const AnalyticsPage = () => {
                   <CardTitle>Category Registrations</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Bar
-                    data={categoryRegistrationsData}
-                    options={{
-                      responsive: true,
-                      plugins: {
-                        legend: {
-                          display: false,
-                        },
-                      },
-                    }}
-                  />
+                  {categoryStats.length > 0 ? (
+                    <div className="h-64">
+                      <Bar
+                        data={categoryRegistrationsData}
+                        options={{
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          plugins: {
+                            legend: {
+                              display: false,
+                            },
+                          },
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-64 flex items-center justify-center text-muted-foreground">
+                      No data available
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -402,17 +425,20 @@ export const AnalyticsPage = () => {
                 <CardTitle>Category Comparison: Views vs Registrations</CardTitle>
               </CardHeader>
               <CardContent>
-                <Bar
-                  data={categoryComparisonData}
-                  options={{
-                    responsive: true,
-                    plugins: {
-                      legend: {
-                        position: 'top',
+                <div className="h-80">
+                  <Bar
+                    data={categoryComparisonData}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          position: 'top',
+                        },
                       },
-                    },
-                  }}
-                />
+                    }}
+                  />
+                </div>
               </CardContent>
             </Card>
           </>
@@ -431,17 +457,20 @@ export const AnalyticsPage = () => {
             <CardTitle>Action Distribution</CardTitle>
           </CardHeader>
           <CardContent>
-            <Doughnut
-              data={actionDistributionData}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'bottom',
+            <div className="h-64 flex items-center justify-center">
+              <Doughnut
+                data={actionDistributionData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'bottom',
+                    },
                   },
-                },
-              }}
-            />
+                }}
+              />
+            </div>
           </CardContent>
         </Card>
 
@@ -450,17 +479,20 @@ export const AnalyticsPage = () => {
             <CardTitle>Popular Events</CardTitle>
           </CardHeader>
           <CardContent>
-            <Bar
-              data={popularEventsData}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'top',
+            <div className="h-64">
+              <Bar
+                data={popularEventsData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'top',
+                    },
                   },
-                },
-              }}
-            />
+                }}
+              />
+            </div>
           </CardContent>
         </Card>
       </div>

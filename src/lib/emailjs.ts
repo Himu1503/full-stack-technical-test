@@ -17,6 +17,10 @@ export interface EmailParams {
   subject?: string;
   message?: string;
   event_name?: string;
+  event_title?: string;
+  event_date?: string;
+  event_location?: string;
+  event_price?: string;
   [key: string]: unknown;
 }
 

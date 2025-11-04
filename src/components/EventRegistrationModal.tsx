@@ -64,6 +64,12 @@ export const EventRegistrationModal = ({
           attendeeEmail: values.email,
           attendeePhone: values.phone,
         },
+        eventDetails: {
+          title: event.title,
+          date: event.date,
+          location: event.location,
+          price: event.price,
+        },
       },
       {
         onSuccess: () => {

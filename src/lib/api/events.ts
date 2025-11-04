@@ -90,8 +90,22 @@ export const eventsApi = {
   },
 
   getById: async (id: string): Promise<Event> => {
-    const apiEvent = await apiClient.get<ApiEvent>(`/events/${id}`);
-    return transformApiEvent(apiEvent);
+    try {
+      const response = await apiClient.get<{ event: ApiEvent }>(`/events/${id}`);
+      console.log('Event detail API response:', response);
+      
+      const apiEvent = response.event || (response as unknown as ApiEvent);
+      if (!apiEvent) {
+        throw new Error('Event data not found in API response');
+      }
+      
+      const transformed = transformApiEvent(apiEvent);
+      console.log('Transformed event:', transformed);
+      return transformed;
+    } catch (error) {
+      console.error('Error fetching event details:', error);
+      throw error;
+    }
   },
 
   register: async (
